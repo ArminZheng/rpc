@@ -27,7 +27,7 @@ public class HelloController {
     @GetMapping("hello/{msg}")
     public String hello(@PathVariable("msg") String msg) {
         String result = helloService.sayHello(msg);
-        log.error("rpc return msg: {}", result);
+        log.info("rpc return msg: {}", result);
         return result;
     }
 

@@ -35,22 +35,15 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
         ctx.writeAndFlush(response);
     }
 
-    public static Object invoke(RpcRequestMessage msg) {
-        try {
-            // 获取接口类
-            final Class<?> target = Class.forName(msg.getInterfaceName());
-            // 获取实现类
-            final HelloService service = (HelloService) ServiceFactory.getService(target);
-            // 确定具体方法
-            final Method method =
-                    service.getClass().getMethod(msg.getMethodName(), msg.getParameterTypes());
-            // 执行方法
-            return method.invoke(service, msg.getParameterValue());
-        } catch (ClassNotFoundException
-                | InvocationTargetException
-                | NoSuchMethodException
-                | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public static Object invoke(RpcRequestMessage msg) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // 获取接口类
+        final Class<?> target = Class.forName(msg.getInterfaceName());
+        // 获取实现类
+        final HelloService service = (HelloService) ServiceFactory.getService(target);
+        // 确定具体方法
+        final Method method =
+                service.getClass().getMethod(msg.getMethodName(), msg.getParameterTypes());
+        // 执行方法
+        return method.invoke(service, msg.getParameterValue());
     }
 }

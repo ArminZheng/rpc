@@ -8,6 +8,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.PreDestroy;
 
@@ -51,15 +53,15 @@ public class SocketClient {
         disconnect();
         try {
             ChannelFuture future = bootstrap.connect(inetHost, inetPort).sync();
+            // channel.closeFuture().addListener(future -> WORKER.shutdownGracefully()); // wrong
             if (future.isSuccess()) {
                 channel = future.channel();
                 log.info("connect server {}:{} success", inetHost, inetPort);
-                // channel.closeFuture().addListener(future -> WORKER.shutdownGracefully()); //
-                // wrong
             }
         } catch (Exception e) {
-            log.error("client error", e);
-            WORKER.shutdownGracefully();
+            log.error("服务器连接失败: {}", e.getMessage());
+            throw new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, "服务端无法连接");
+            // WORKER.shutdownGracefully(); // wrong
         }
     }
 
