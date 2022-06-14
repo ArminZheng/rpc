@@ -28,14 +28,21 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
         try {
             Object invoke = invoke(message);
             response.setReturnValue(invoke);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            // 实际的错误 Caused by: java.lang.ArithmeticException: / by zero
+            // 被包裹进了 InvocationTargetException，所以应该先 getCause 再获取信息 / by zero
+            response.setExceptionValue(new Exception("远程调用出错：" + e.getCause().getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            response.setExceptionValue(new Exception("远程调用出错：" + e.getCause().getMessage()));
+            response.setExceptionValue(new Exception("远程调用出错：" + e.getMessage()));
         }
         ctx.writeAndFlush(response);
     }
 
-    public static Object invoke(RpcRequestMessage msg) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static Object invoke(RpcRequestMessage msg)
+            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+                    IllegalAccessException {
         // 获取接口类
         final Class<?> target = Class.forName(msg.getInterfaceName());
         // 获取实现类
