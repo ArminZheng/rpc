@@ -21,7 +21,7 @@ import javax.annotation.PreDestroy;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class SocketClient {
+public class ClientLaunch {
 
     private static final NioEventLoopGroup WORKER = new NioEventLoopGroup();
 
@@ -31,7 +31,7 @@ public class SocketClient {
 
     public Channel channel() {
         if (channel != null && channel.isActive()) return channel;
-        synchronized (SocketClient.class) {
+        synchronized (ClientLaunch.class) {
             if (channel == null || !channel.isActive()) connect();
             return channel;
         }

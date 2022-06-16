@@ -8,6 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-parent</artifactId>
         <version>2.6.3</version>
+        <relativePath/> <!-- 会自动找../pom.xml, 如果真的存在会干扰，手动置为空 -->
     </parent>
 
     <groupId>com.arminzheng</groupId>
