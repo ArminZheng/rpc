@@ -3,7 +3,7 @@ package com.arminzheng.infrastructure.utility;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * auto_increment
+ * 请求序号: 为了双工通信，提供异步能力
  *
  * @author zy
  */

@@ -1,8 +1,8 @@
 package com.arminzheng.infrastructure.rpc.client;
 
-import com.arminzheng.infrastructure.utility.AutoIncrement;
 import com.arminzheng.infrastructure.rpc.handler.RpcResponseMessageHandler;
 import com.arminzheng.infrastructure.rpc.message.RpcRequestMessage;
+import com.arminzheng.infrastructure.utility.AutoIncrement;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import java.lang.reflect.Proxy;
 @RequiredArgsConstructor
 public class ServiceHandler {
 
-    private final SocketClient socketClient;
+    private final ClientLaunch clientLaunch;
 
     /**
      * 代理service
@@ -48,13 +48,13 @@ public class ServiceHandler {
                                             method.getReturnType(),
                                             method.getParameterTypes(),
                                             args);
-                            socketClient.channel().writeAndFlush(msg);
+                            clientLaunch.channel().writeAndFlush(msg);
                             // 接收结果
                             DefaultPromise<Object> promise =
-                                    new DefaultPromise<>(socketClient.channel().eventLoop());
+                                    new DefaultPromise<>(clientLaunch.channel().eventLoop());
                             RpcResponseMessageHandler.PROMISES.put(nextId, promise);
 
-                            // 同步阻塞 await()不会抛异常
+                            // 同步阻塞 invoke 方法本身会 throws Throwable 所以 await()不会抛异常
                             promise.await();
                             if (promise.isSuccess()) {
                                 return promise.getNow(); // 调用正常
