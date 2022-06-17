@@ -20,15 +20,25 @@ import java.util.Iterator;
  */
 @Slf4j
 public class SelectorServer {
+
+    protected static final ServerSocketChannel ssc;
+    protected static final Selector selector;
+    protected static final SelectionKey register;
+
+    static {
+        try {
+            ssc = ServerSocketChannel.open();
+            ssc.configureBlocking(false);
+            ssc.bind(new InetSocketAddress(8888));
+            selector = Selector.open();
+            register = ssc.register(selector, SelectionKey.OP_ACCEPT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @SuppressWarnings("all")
     public static void main(String[] args) throws IOException {
-        ServerSocketChannel serverChannel = ServerSocketChannel.open();
-        serverChannel.configureBlocking(false);
-        Selector selector = Selector.open();
-        SelectionKey register = serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-        // bind port
-        serverChannel.bind(new InetSocketAddress(8888));
-
         log.info("registry selection key event is {}", register);
         while (true) {
             selector.select();
@@ -45,7 +55,7 @@ public class SelectorServer {
                 if (activeKey.isAcceptable()) { // 仅注册
                     // SelectableChannel channel1 = activeKey.channel();
                     log.info("current key event accept is {}", activeKey == register); // true
-                    SocketChannel channel = serverChannel.accept();
+                    SocketChannel channel = ssc.accept();
                     channel.configureBlocking(false);
                     SelectionKey registerKey = channel.register(selector, SelectionKey.OP_READ);
 
