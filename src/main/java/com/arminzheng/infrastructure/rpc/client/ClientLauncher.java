@@ -21,17 +21,17 @@ import javax.annotation.PreDestroy;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class ClientLaunch {
+public class ClientLauncher {
 
     private static final NioEventLoopGroup WORKER = new NioEventLoopGroup();
 
-    private final ChannelInitializerHandler channelInitializerHandler;
+    private final ChannelInitialization channelInitialization;
     private volatile Channel channel;
     private Bootstrap bootstrap;
 
     public Channel channel() {
         if (channel != null && channel.isActive()) return channel;
-        synchronized (ClientLaunch.class) {
+        synchronized (ClientLauncher.class) {
             if (channel == null || !channel.isActive()) connect();
             return channel;
         }
@@ -41,7 +41,7 @@ public class ClientLaunch {
         bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(WORKER);
-        bootstrap.handler(channelInitializerHandler);
+        bootstrap.handler(channelInitialization);
     }
 
     private void connect() {

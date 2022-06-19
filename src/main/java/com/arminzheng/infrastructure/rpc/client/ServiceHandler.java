@@ -19,7 +19,7 @@ import java.lang.reflect.Proxy;
 @RequiredArgsConstructor
 public class ServiceHandler {
 
-    private final ClientLaunch clientLaunch;
+    private final ClientLauncher clientLauncher;
 
     /**
      * 代理service
@@ -48,10 +48,10 @@ public class ServiceHandler {
                                             method.getReturnType(),
                                             method.getParameterTypes(),
                                             args);
-                            clientLaunch.channel().writeAndFlush(msg);
+                            clientLauncher.channel().writeAndFlush(msg);
                             // 接收结果
                             DefaultPromise<Object> promise =
-                                    new DefaultPromise<>(clientLaunch.channel().eventLoop());
+                                    new DefaultPromise<>(clientLauncher.channel().eventLoop());
                             RpcResponseMessageHandler.PROMISES.put(nextId, promise);
 
                             // 同步阻塞 invoke 方法本身会 throws Throwable 所以 await()不会抛异常
