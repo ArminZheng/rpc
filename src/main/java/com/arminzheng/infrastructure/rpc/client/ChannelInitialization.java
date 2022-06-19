@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class ChannelInitializerHandler extends ChannelInitializer<SocketChannel> {
+public class ChannelInitialization extends ChannelInitializer<SocketChannel> {
     private final LoggingHandler loggingHandler = new LoggingHandler();
     private final MessageCodecSharable messageCodec;
     private final RpcResponseMessageHandler rpcResponseMessageHandler;

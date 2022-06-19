@@ -1,5 +1,5 @@
-# rpc
+# message
 
-使用 netty 模拟 rpc 的服务调用
+使用 netty 模拟消息通讯
 
-use netty to mock rpc service calls
+simulate messaging with netty

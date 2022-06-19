@@ -8,30 +8,28 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.PreDestroy;
 
 /**
- * rpc 服务消费端
+ * 客户端启动器
  *
  * @author zy
  */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class ClientLaunch {
+public class ClientLauncher {
 
     private static final NioEventLoopGroup WORKER = new NioEventLoopGroup();
 
-    private final ChannelInitializerHandler channelInitializerHandler;
+    private final ChannelInitialization channelInitialization;
     private volatile Channel channel;
     private Bootstrap bootstrap;
 
     public Channel channel() {
         if (channel != null && channel.isActive()) return channel;
-        synchronized (ClientLaunch.class) {
+        synchronized (ClientLauncher.class) {
             if (channel == null || !channel.isActive()) connect();
             return channel;
         }
@@ -41,7 +39,7 @@ public class ClientLaunch {
         bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(WORKER);
-        bootstrap.handler(channelInitializerHandler);
+        bootstrap.handler(channelInitialization);
     }
 
     private void connect() {
@@ -60,7 +58,6 @@ public class ClientLaunch {
             }
         } catch (Exception e) {
             log.error("服务器连接失败: {}", e.getMessage());
-            throw new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, "服务端无法连接");
             // WORKER.shutdownGracefully(); // wrong
         }
     }
