@@ -1,5 +1,6 @@
 package com.arminzheng.exercise.buffer.diversity;
 
+import lombok.Cleanup;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,17 +20,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class TestGatheringWrites {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ByteBuffer h = UTF_8.encode("Hello");
-        ByteBuffer w = UTF_8.encode("word");
+        ByteBuffer w = UTF_8.encode("Word");
         ByteBuffer nh = UTF_8.encode("你好");
         // debugAll(b2);
-        try (RandomAccessFile rw = new RandomAccessFile("data.txt", "rw")) {
-            FileChannel ch = rw.getChannel();
-            ch.write(new ByteBuffer[] {h, w, nh});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        @Cleanup RandomAccessFile rw = new RandomAccessFile("data.txt", "rw");
+        FileChannel ch = rw.getChannel();
+        ch.write(new ByteBuffer[] {h, w, nh});
     }
 
     @Test

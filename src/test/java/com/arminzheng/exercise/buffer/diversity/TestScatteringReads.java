@@ -1,5 +1,7 @@
 package com.arminzheng.exercise.buffer.diversity;
 
+import lombok.Cleanup;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -23,11 +25,12 @@ public class TestScatteringReads {
         ByteBuffer bu1 = ByteBuffer.allocate(3);
         ByteBuffer bu2 = ByteBuffer.allocate(3);
         ByteBuffer bu3 = ByteBuffer.allocate(5);
-        try (RandomAccessFile file = new RandomAccessFile("words.txt", "rw")) {
-            FileChannel channel = file.getChannel();
-            // 顺序分散读取到三个ByteBuffer中
-            channel.read(new ByteBuffer[] {bu1, bu2, bu3});
-        }
+
+        @Cleanup RandomAccessFile file = new RandomAccessFile("words.txt", "rw");
+        FileChannel channel = file.getChannel();
+        // 顺序分散读取到三个ByteBuffer中
+        channel.read(new ByteBuffer[] {bu1, bu2, bu3});
+
         bu1.flip();
         bu2.flip();
         bu3.flip();
